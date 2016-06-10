@@ -34,7 +34,8 @@
             start:      'touchstart',
             move:       'touchmove',
             end:        'touchend'
-        }
+        },
+        vertical: false
     };
 
     // Check if element is disabled 
@@ -86,10 +87,13 @@
         // Calculate percentage
         var percent,
             clientRect   = input.getBoundingClientRect(),
-            thumbWidth   = (((100 / clientRect.width) * (settings.thumbWidth / 2)) / 100);
+            rectLength = settings.vertical ? clientRect.height : clientRect.width,
+            rectEdge = settings.vertical ? clientRect.top : clientRect.left,
+            touchCoordinate = settings.vertical ? touch.clientY : touch.clientX,
+            thumbWidth   = (((100 / rectLength) * (settings.thumbWidth / 2)) / 100);
 
-        // Determine left percentage
-        percent = ((100 / clientRect.width) * (touch.clientX - clientRect.left));
+        // Determine percentage
+        percent = ((100 / rectLength) * (touchCoordinate - rectEdge));
 
         // Don't allow outside bounds
         if (percent < 0) { percent = 0; }
@@ -109,6 +113,7 @@
     
     // Update range value based on position
     function setValue(event) {
+
         // If not enabled, bail
         if (!settings.enabled || event.target.type !== 'range' || isDisabled(event.target)) {
             return;
